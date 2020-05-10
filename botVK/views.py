@@ -4,7 +4,7 @@ from django.shortcuts import render
 import json, vk, random
 import sqlite3
 
-vk.Session(access_token="e4116669eab6306f879a7b64e954f7205bfdef0508e20c5f4a66b3b2df1e83ccadb85e4a0d281933b9513")
+session = vk.Session(access_token="e4116669eab6306f879a7b64e954f7205bfdef0508e20c5f4a66b3b2df1e83ccadb85e4a0d281933b9513")
 vkAPI = vk.API(session)
 
 @csrf_exempt
@@ -52,6 +52,26 @@ if body["type"] == "message_new":
 	return HttpResponse("ok")
 # ---Конец функции---
 	
+def sendAnswer(userID, answ = "", attach = "", keyboard = ""):
+	vkAPI.messages.send(user_id = userID, message = answ, attachment=attach, keyboard=keyboard, random_id = random.randint(1, 99999999999999999), v=5.103)
 
-def sendAnswer(userID, answ = "", attach = ""):
-	vkAPI.messages.send(user_id = userID, message = answ, attachment=attach, random_id = random.randint(1, 99999999999999999), v=5.103)
+def keyboardStart(request, userID):
+	answ = "Привет! Выбери свою группу пользователя!"
+	keyboard = json.dumps({
+		"one_time": True,
+
+		"buttons":[[
+			{
+				"action": {
+					"type":"text",
+					"label":"Администратор",
+					"payload": """{"command":"admin"}"""
+				},
+				"color":"negative"
+			}
+		]]
+	})
+	
+
+
+	sendAnswer(userID, answ, keyboard = keyboard)
